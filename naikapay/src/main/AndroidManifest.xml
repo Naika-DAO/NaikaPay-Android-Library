@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.naika.naikapay">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application>
+        <activity
+            android:name="io.naika.naikapay.ui.WalletActivity"
+            android:theme="@style/Theme.Transparent"
+            android:exported="true" />
+    </application>
+
+</manifest>
