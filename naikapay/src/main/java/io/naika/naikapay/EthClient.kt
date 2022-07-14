@@ -1,5 +1,7 @@
 package io.naika.naikapay
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.ethereum.geth.*
 
 class EthClient {
@@ -7,11 +9,13 @@ class EthClient {
     private val ethClient: EthereumClient = Geth.newEthereumClient("http://geth.naikadev.com:8545")
 
 
-    fun getAddressBalance(address: Address): BigInt? {
-        return ethClient.getBalanceAt(Context(), address, -1)
+    suspend fun getAddressBalance(address: Address): BigInt? {
+        return withContext(Dispatchers.IO) {
+            ethClient.getBalanceAt(Context(), address, -1)
+        }
     }
 
-    fun sendTransaction(signedTransaction: Transaction){
+    fun sendTransaction(signedTransaction: Transaction) {
         ethClient.sendTransaction(Context(), signedTransaction)
     }
 
@@ -27,9 +31,5 @@ class EthClient {
         return ethClient.getNonceAt(Context(), address, -1)
     }
 
-    fun getTestSmartContract(): Storage {
-        val address = Geth.newAddressFromHex("0xcda753B61bF622c8475769202f9533820a1AD6f9")
-        return Storage(address, ethClient)
-    }
 
 }

@@ -11,8 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.naika.naikapay.databinding.FragmentDialogWalletBinding
 import org.ethereum.geth.Account
-import org.ethereum.geth.BigInt
-import org.ethereum.geth.Geth
 
 class WalletDialogFragment: BottomSheetDialogFragment(),
     AccountsAdapter.OnAccountAdapterInteraction {
@@ -26,7 +24,7 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        accountViewModel = ViewModelProvider(this)[AccountViewModel::class.java]
+        accountViewModel = ViewModelProvider(activity!!)[AccountViewModel::class.java]
 
     }
 

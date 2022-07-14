@@ -2,28 +2,35 @@ package io.naika.naikapay
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.ethereum.geth.*
 
 class Wallet(context: Context) {
 
-    private val ks: KeyStore = KeyStore("${context.filesDir}/keystore", Geth.LightScryptN, Geth.LightScryptP)
+    private val ks: KeyStore =
+        KeyStore("${context.filesDir}/keystore", Geth.LightScryptN, Geth.LightScryptP)
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    fun createNewAccount(context:Context, passPhrase: String): Account {
+    fun createNewAccount(context: Context, passPhrase: String): Account {
         // Create a new account with the specified encryption passphrase.
         val newAccount = ks.newAccount(passPhrase)
-        Log.d("address" , newAccount.address.hex)
+        Log.d("address", newAccount.address.hex)
         return newAccount
     }
 
-    fun getListOfAccounts(): List<Account> {
-        val accountList = mutableListOf<Account>()
-        for (i in 0 until ks.accounts.size()){
-            accountList.add(i.toInt() , ks.accounts.get(i))
+    suspend fun getListOfAccounts(): List<Account> {
+        return withContext(Dispatchers.IO) {
+            val accountList = mutableListOf<Account>()
+            for (i in 0 until ks.accounts.size()) {
+                accountList.add(i.toInt(), ks.accounts.get(i))
+            }
+            accountList
         }
-        return accountList
     }
 
-    fun isAddressExist(address: Address): Boolean{
+    fun isAddressExist(address: Address): Boolean {
         return ks.hasAddress(address)
     }
 
