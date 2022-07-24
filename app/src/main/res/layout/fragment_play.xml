@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Guess the result then tap toss the coin"
+        android:textColor="#4A4A4A"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/play_result_title_text_View"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_lost"
+        android:textColor="@color/red"
+        android:textSize="32sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <TextView
+        android:id="@+id/play_coin_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="@string/head"
+        android:textColor="@color/my_blue"
+        android:textSize="42sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/play_view_pager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/play_coin_title" />
+
+    <ImageView
+        android:id="@+id/play_right_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="42dp"
+        android:src="@drawable/ic_right_arrow"
+        app:layout_constraintBottom_toBottomOf="@+id/play_view_pager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/play_view_pager" />
+
+    <ImageView
+        android:id="@+id/play_left_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:src="@drawable/ic_left_arrow"
+        app:layout_constraintBottom_toBottomOf="@+id/play_view_pager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/play_view_pager" />
+
+    <ImageView
+        android:id="@+id/first_step"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_current_step_background"
+        app:layout_constraintBottom_toTopOf="@+id/toss_coin_button"
+        app:layout_constraintEnd_toStartOf="@+id/first_line"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/first_step_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/first_step"
+        app:layout_constraintEnd_toEndOf="@id/first_step"
+        app:layout_constraintTop_toTopOf="@id/first_step"
+        app:layout_constraintBottom_toBottomOf="@id/first_step" />
+
+
+    <TextView
+        android:id="@+id/first_step_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="1"
+        app:layout_constraintStart_toStartOf="@id/first_step"
+        app:layout_constraintEnd_toEndOf="@id/first_step"
+        app:layout_constraintTop_toTopOf="@id/first_step"
+        app:layout_constraintBottom_toBottomOf="@id/first_step" />
+
+    <View
+        android:id="@+id/first_line"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/first_step"
+        app:layout_constraintEnd_toStartOf="@+id/second_step"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/first_step"
+        app:layout_constraintTop_toTopOf="@+id/first_step" />
+
+    <ImageView
+        android:id="@+id/second_step"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_unselected_step_background"
+        app:layout_constraintBottom_toTopOf="@+id/toss_coin_button"
+        app:layout_constraintEnd_toStartOf="@+id/second_line"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/first_line" />
+
+    <ImageView
+        android:id="@+id/second_step_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/second_step"
+        app:layout_constraintEnd_toEndOf="@id/second_step"
+        app:layout_constraintTop_toTopOf="@id/second_step"
+        app:layout_constraintBottom_toBottomOf="@id/second_step" />
+
+    <TextView
+        android:id="@+id/second_step_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="2"
+        app:layout_constraintStart_toStartOf="@id/second_step"
+        app:layout_constraintEnd_toEndOf="@id/second_step"
+        app:layout_constraintTop_toTopOf="@id/second_step"
+        app:layout_constraintBottom_toBottomOf="@id/second_step" />
+
+    <View
+        android:id="@+id/second_line"
+        android:layout_width="0sp"
+        android:layout_height="3dp"
+        android:background="@color/text_color"
+        app:layout_constraintBottom_toBottomOf="@+id/second_step"
+        app:layout_constraintEnd_toStartOf="@+id/third_step"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/second_step"
+        app:layout_constraintTop_toTopOf="@+id/second_step" />
+
+    <ImageView
+        android:id="@+id/third_step"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:src="@drawable/ic_unselected_step_background"
+        app:layout_constraintBottom_toTopOf="@+id/toss_coin_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/second_line" />
+
+    <ImageView
+        android:id="@+id/third_step_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/third_step"
+        app:layout_constraintEnd_toEndOf="@id/third_step"
+        app:layout_constraintTop_toTopOf="@id/third_step"
+        app:layout_constraintBottom_toBottomOf="@id/third_step" />
+
+    <TextView
+        android:id="@+id/third_step_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="3"
+        app:layout_constraintStart_toStartOf="@id/third_step"
+        app:layout_constraintEnd_toEndOf="@id/third_step"
+        app:layout_constraintTop_toTopOf="@id/third_step"
+        app:layout_constraintBottom_toBottomOf="@id/third_step" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="1 chance(s) left = 3 toss"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/second_step"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/toss_coin_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="23dp"
+        android:text="@string/toss_the_coin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

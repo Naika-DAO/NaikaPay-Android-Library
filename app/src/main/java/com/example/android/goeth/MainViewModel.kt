@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.ethereum.geth.*
 import org.web3j.crypto.RawTransaction
 import org.web3j.crypto.TransactionEncoder
 import org.web3j.protocol.Web3j
@@ -24,9 +23,12 @@ const val SMART_CONTRACT_HASH_ADDRESS = "0xcda753B61bF622c8475769202f9533820a1AD
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
+    var currentRound = 0
+    var predictedCoinState = 0
+    var coinTossRounds = intArrayOf(-1, -1, -1)
+
     var isAccountConnected = false
     var selectedAddressHash = ""
-    private val ethClient: EthereumClient = Geth.newEthereumClient("http://geth.naikadev.com:8545")
     private val _tx = MutableLiveData<ByteArray>()
     val tx: LiveData<ByteArray> = _tx
 
@@ -61,7 +63,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
             selectedAddressHash, DefaultBlockParameterName.LATEST
         )?.sendAsync()?.get()!!
         val gasPrice = web3?.ethGasPrice()?.sendAsync()?.get()
-        val gasLimit = BigInteger("1000000")
+        val gasLimit = BigInteger("2000000")
         val data = "6057361d0000000000000000000000000000000000000000000000000000000000000150"
         val transaction = RawTransaction.createTransaction(
             ethGetTransactionCount.transactionCount,

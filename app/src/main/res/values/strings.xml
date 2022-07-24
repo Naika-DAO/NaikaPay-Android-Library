@@ -2,4 +2,11 @@
     <string name="app_name">GoETH</string>
     <string name="connect_wallet">Connect Wallet</string>
     <string name="wallet_connected">Connected</string>
+    <string name="head">Head</string>
+    <string name="tails">Tails</string>
+    <string name="you_lost">You Lost</string>
+    <string name="you_won">You Won</string>
+    <string name="play_second_round">Play Second Round</string>
+    <string name="play_third_round">Play Third Round</string>
+    <string name="toss_the_coin">Toss the coin</string>
 </resources>

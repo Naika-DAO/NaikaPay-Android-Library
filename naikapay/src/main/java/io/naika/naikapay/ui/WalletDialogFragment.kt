@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.naika.naikapay.databinding.FragmentDialogWalletBinding
-import org.ethereum.geth.Account
 
 class WalletDialogFragment: BottomSheetDialogFragment(),
     AccountsAdapter.OnAccountAdapterInteraction {
@@ -38,11 +37,19 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
 
         accountViewModel.createAccountIfNothingExist(requireContext())
         accountViewModel.getAccountList()
-        binding.accountRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL , false)
+        binding.accountRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
 
-        accountViewModel.accountList.observe(viewLifecycleOwner){
-            val adapter = AccountsAdapter(it, this)
-            binding.accountRecyclerView.adapter = adapter
+        val adapter = AccountsAdapter(this)
+        binding.accountRecyclerView.adapter = adapter
+
+
+        accountViewModel.accountList.observe(viewLifecycleOwner) {
+            adapter.addData(it)
+        }
+
+        accountViewModel.accountListChanged.observe(viewLifecycleOwner) {
+            adapter.setData(it)
         }
 
         return root
@@ -53,9 +60,13 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
         _binding = null
     }
 
-    override fun onAccountClicked(account: Account) {
-        val balance = accountViewModel.balanceHashMap[account.address.hex]
-        val accInfo = AccountInfoModel(account = account, balance = balance)
+    override fun onAccountClicked(account: AccountUIModel) {
+
+        if (account.balance == null) {
+            return
+        }
+
+        val accInfo = AccountInfoModel(account = account.account, balance = account.balance)
         walletDialogFragmentListener?.onAccountSelected(accInfo)
         dismiss()
     }

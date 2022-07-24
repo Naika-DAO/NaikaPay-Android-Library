@@ -43,9 +43,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation (project(path: ':naikapay')) {
+    implementation project(path: ':naikapay')
+
+/*    implementation (project(path: ':naikapay')) {
         exclude group:"org.ethereum", module: "geth"
-    }
+    }*/
+
     //implementation files('aar/geth-android-all-1.10.19-23bee162.aar')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

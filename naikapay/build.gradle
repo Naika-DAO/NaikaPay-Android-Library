@@ -44,6 +44,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'org.ethereum:geth:1.8.11'
+    implementation 'com.github.WalletConnect:kotlin-walletconnect-lib:0.9.6'
 
     //region androidX lifecycle
     def lifecycle_version = "2.4.1"
@@ -58,5 +59,10 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
     //endregion
+
+    implementation 'com.squareup.moshi:moshi:1.8.0'
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "org.java-websocket:Java-WebSocket:1.4.0"
+    implementation "com.github.komputing:khex:1.1.2"
 
 }

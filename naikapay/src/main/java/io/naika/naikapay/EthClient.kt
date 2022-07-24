@@ -23,8 +23,13 @@ class EthClient {
         return ethClient.suggestGasPrice(Context())
     }
 
-    fun getEstimateGas(): Long {
-        return ethClient.estimateGas(Context(), CallMsg())
+    fun getEstimateGas(tx: Transaction): Long {
+        val callMsg = Geth.newCallMsg()
+        callMsg.to = tx.to
+        callMsg.data = tx.data
+        callMsg.value = tx.value
+        callMsg.gasPrice = ethClient.suggestGasPrice(Context())
+        return ethClient.estimateGas(Context(), callMsg)
     }
 
     fun getNonceForAddress(address: Address): Long {
