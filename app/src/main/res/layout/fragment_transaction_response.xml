@@ -6,20 +6,35 @@
     android:background="@color/background">
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/claim_reward_button"
+        android:id="@+id/ok_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
         android:textAllCaps="false"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:cornerRadius="111dp"
-        android:textColor="@color/white"
         android:backgroundTint="@color/my_blue"
         android:fontFamily="@font/futura_medium"
         android:layout_marginBottom="23dp"
-        android:text="Claim your reward"
+        android:text="Ok"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/successful_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Successful Transaction"
+        android:textColor="@color/green"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:fontFamily="@font/futura_medium"
+        android:layout_marginBottom="42dp"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -27,9 +42,10 @@
         android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You won three round in a row"
+        android:text="TX Hash: "
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:padding="16dp"
         android:textStyle="bold"
         android:fontFamily="@font/futura_medium"
         android:layout_marginBottom="32dp"
@@ -37,27 +53,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ImageView
+        android:id="@+id/copy_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_content_copy_24"
+        app:layout_constraintTop_toBottomOf="@id/title_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="18dp"
+        android:padding="4dp" />
+
     <TextView
         android:id="@+id/sub_title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You will get 3X of your investment by signing a transaction."
+        android:text="View on EtherScan"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
         android:gravity="center_horizontal"
         android:textStyle="bold"
         android:fontFamily="@font/futura_medium"
         android:layout_marginBottom="42dp"
-        app:layout_constraintBottom_toTopOf="@+id/claim_reward_button"
+        app:layout_constraintBottom_toTopOf="@+id/ok_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintBottom_toTopOf="@+id/successful_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

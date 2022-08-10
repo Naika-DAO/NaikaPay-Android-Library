@@ -8,11 +8,15 @@
     tools:context=".MainActivity">
 
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/connect_wallet_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/connect_wallet"
+        app:cornerRadius="33dp"
+        android:fontFamily="@font/futur"
+        android:backgroundTint="@color/my_blue"
+        android:textAllCaps="false"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,6 +29,7 @@
         android:padding="8dp"
         android:layout_marginTop="60dp"
         android:textSize="16sp"
+        android:fontFamily="@font/futur"
         android:textColor="@color/text_color"
         android:text="1. Connect Your Wallet"
         android:gravity="center_horizontal"
@@ -37,6 +42,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:fontFamily="@font/futur"
         android:textSize="16sp"
         android:textColor="@color/text_color"
         android:text="2. Buy Chance"
@@ -51,6 +57,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:textSize="16sp"
+        android:fontFamily="@font/futur"
         android:textColor="@color/text_color"
         android:text="3. Play Game"
         android:gravity="center_horizontal"
@@ -70,7 +77,7 @@
         android:id="@+id/chances_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0 Chances Left"
+        android:text="0 Chance Left"
         android:visibility="gone"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -79,25 +86,41 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buy_chances_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
+        app:cornerRadius="111dp"
+        android:backgroundTint="@color/color_states_materialbutton"
         android:enabled="false"
-        android:text="Buy Chances"
+        android:textSize="16sp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="12dp"
+        android:fontFamily="@font/futur"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:text="Buy Chance"
         app:layout_constraintEnd_toStartOf="@+id/play_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/play_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="Play Game"
-        android:enabled="true"
+        android:text="Play"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="24dp"
+        android:fontFamily="@font/futur"
+        android:backgroundTint="@color/color_states_materialbutton"
+        android:enabled="false"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        app:cornerRadius="111dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/buy_chances_button"

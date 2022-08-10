@@ -8,18 +8,21 @@
         <entry key="app/src/main/res/drawable/ic_head.xml" value="0.127" />
         <entry key="app/src/main/res/drawable/ic_image_background.xml" value="0.2025" />
         <entry key="app/src/main/res/drawable/ic_unselected_step_background.xml" value="0.2025" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.22644927536231885" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="app/src/main/res/layout/activity_play.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/dialog_buy_chances.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/dialog_claim_reward.xml" value="0.18697916666666667" />
+        <entry key="app/src/main/res/layout/dialog_buy_chances.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/dialog_claim_reward.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_claim_reward.xml" value="0.24270833333333333" />
-        <entry key="app/src/main/res/layout/fragment_play.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_play.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_transaction_response.xml" value="0.22" />
         <entry key="app/src/main/res/layout/image_item.xml" value="0.178125" />
         <entry key="app/src/main/res/menu/main_activity_menu.xml" value="0.2625" />
+        <entry key="naikapay/src/main/res/drawable/relative_background.xml" value="0.175" />
+        <entry key="naikapay/src/main/res/drawable/rounded_dialog.xml" value="0.175" />
         <entry key="naikapay/src/main/res/layout/account_row_item.xml" value="0.25" />
         <entry key="naikapay/src/main/res/layout/activity_wallet.xml" value="0.2246376811594203" />
         <entry key="naikapay/src/main/res/layout/fragment_dialog_chooser_wallet.xml" value="0.33" />
-        <entry key="naikapay/src/main/res/layout/fragment_dialog_sign.xml" value="0.33" />
+        <entry key="naikapay/src/main/res/layout/fragment_dialog_sign.xml" value="0.25" />
         <entry key="naikapay/src/main/res/layout/fragment_dialog_wallet.xml" value="0.25" />
       </map>
     </option>

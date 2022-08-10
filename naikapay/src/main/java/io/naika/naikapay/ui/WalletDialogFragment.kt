@@ -1,15 +1,20 @@
 package io.naika.naikapay.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.naika.naikapay.databinding.FragmentDialogWalletBinding
+
 
 class WalletDialogFragment: BottomSheetDialogFragment(),
     AccountsAdapter.OnAccountAdapterInteraction {
@@ -27,6 +32,7 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
 
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,7 +41,7 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
         _binding = FragmentDialogWalletBinding.inflate(layoutInflater, container, false)
         val root: View = binding.root
 
-        accountViewModel.createAccountIfNothingExist(requireContext())
+
         accountViewModel.getAccountList()
         binding.accountRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -45,11 +51,50 @@ class WalletDialogFragment: BottomSheetDialogFragment(),
 
 
         accountViewModel.accountList.observe(viewLifecycleOwner) {
-            adapter.addData(it)
+            if (it.isEmpty()) {
+                binding.emptyViewButton.visibility = View.VISIBLE
+                binding.emptyViewText.visibility = View.VISIBLE
+            } else {
+                binding.emptyViewButton.visibility = View.GONE
+                binding.emptyViewText.visibility = View.INVISIBLE
+                adapter.addData(it)
+            }
+
         }
 
         accountViewModel.accountListChanged.observe(viewLifecycleOwner) {
+
             adapter.setData(it)
+
+        }
+
+        binding.emptyViewButton.setOnClickListener {
+
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Choose a password")
+            val input = EditText(requireContext())
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            lp.setMargins(8, 8, 8, 8)
+            input.layoutParams = lp
+            input.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+            builder.setView(input)
+
+            builder.setPositiveButton("Create") { dialog, n ->
+                if (!input.text.isNullOrBlank()) {
+                    accountViewModel.createAccount(requireContext(), input.text.toString())
+                }
+            }
+
+            builder.setNegativeButton("Cancel") { dialog, n ->
+                dialog.dismiss()
+            }
+            builder.show()
+
+
         }
 
         return root

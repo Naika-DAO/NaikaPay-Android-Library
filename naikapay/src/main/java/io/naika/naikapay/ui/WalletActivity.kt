@@ -59,6 +59,7 @@ class WalletActivity : AppCompatActivity(), WalletDialogFragment.WalletDialogFra
                 args.putString(SIGN_DIALOG_ADDRESS, signerHash)
                 args.putDouble(SIGN_DIALOG_ADDRESS_BALANCE, convertBigIntBalanceToDouble(balance))
                 signDialogFragment.arguments = args
+                signDialogFragment.isCancelable = false
                 signDialogFragment.show(supportFragmentManager, "sign")
             }
         }

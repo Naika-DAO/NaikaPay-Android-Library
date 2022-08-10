@@ -40,12 +40,12 @@ class Wallet(context: Context) {
         return ks.exportKey(account, passPhrase, exportPassword)
     }
 
-    fun changePassword(account: Account, currentPassPhrase:String, newPassPhrase:String){
+    fun changePassword(account: Account, currentPassPhrase: String, newPassPhrase: String) {
         // Update the passphrase on the account created above inside the local keystore.
         ks.updateAccount(account, currentPassPhrase, newPassPhrase)
     }
 
-    fun deleteAccount(account: Account, passPhrase: String){
+    fun deleteAccount(account: Account, passPhrase: String) {
         // Delete the account updated above from the local keystore.
         ks.deleteAccount(account, passPhrase)
     }
@@ -56,9 +56,17 @@ class Wallet(context: Context) {
         return ks.importKey(jsonAcc, exportPassword, importPassword)
     }
 
-    fun signTransaction(tx:Transaction, signer:Account,passPhrase: String, chainId:Long):Transaction{
+    fun signTransaction(
+        tx: Transaction,
+        signer: Account,
+        passPhrase: String,
+        chainId: Long
+    ): Transaction {
+
+
         var signed: Transaction = ks.signTxPassphrase(signer, passPhrase, tx, BigInt(chainId))
         return signed
+
 
         // Sign a transaction with multiple manually cancelled authorizations
         //ks.unlock(signer, "Signer password")

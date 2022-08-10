@@ -7,12 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import io.naika.naikapay.calculateGasFeeInETH
+import io.naika.naikapay.convertBigIntBalanceToDouble
 import io.naika.naikapay.databinding.FragmentDialogSignBinding
+import io.naika.naikapay.getMethodName
 import io.naika.naikapay.toSummarisedAddress
 import org.ethereum.geth.Transaction
+import org.komputing.khex.extensions.toHexString
 
 const val SIGN_DIALOG_TX = "tx"
 const val SIGN_DIALOG_ADDRESS = "address"
@@ -53,16 +57,49 @@ class SignDialogFragment : BottomSheetDialogFragment() {
 
         val transaction = Transaction(txBytes)
 
+        val methodName = getMethodName(
+            "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"buyChance\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"claim\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address payable\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}]",
+            transaction.data.toHexString()
+        )
+
+        Log.d("Babak", methodName)
+
 
         val estimateGas = accountViewModel.getEstimateGasFee(transaction)
         val estimatedGasInETH = calculateGasFeeInETH(accountViewModel.getGasPrice(), estimateGas)
         Log.d("GAS", estimatedGasInETH.toString())
-        binding.estimateGasETH.text = String.format("%.8f", estimatedGasInETH)
+        binding.estimateGasETH.text = String.format("%.6f ETH", estimatedGasInETH)
 
+        binding.toAddressHash.text = toSummarisedAddress(transaction.to.hex)
 
+        val value = convertBigIntBalanceToDouble(transaction.value)
+        binding.valueTextView.text = String.format("%.6f ETH", value)
 
+        binding.totalEstimateETH.text = String.format("%.6f ETH", estimatedGasInETH + value)
+
+        binding.rejectTransaction.setOnClickListener {
+            dismiss()
+        }
         binding.signTransaction.setOnClickListener {
-            accountViewModel.signTx(transaction, signerAddressHash)
+            if (binding.passwordEditText.text.isNullOrBlank()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter a valid password.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
+            accountViewModel.signTx(
+                transaction,
+                signerAddressHash,
+                binding.passwordEditText.text.toString()
+            )
+
+
+        }
+        accountViewModel.error.observe(this) { error ->
+            Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
         }
 
         accountViewModel.signedTx.observe(this) { tx ->

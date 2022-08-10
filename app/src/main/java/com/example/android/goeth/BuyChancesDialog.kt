@@ -28,6 +28,9 @@ class BuyChancesDialog : BottomSheetDialogFragment() {
         _binding = DialogBuyChancesBinding.inflate(layoutInflater, container, false)
         val root: View = binding.root
 
+        binding.amountTextView.text =
+            String.format("%s: %.3f %s", "Amount", CHANCE_PRICE, "ETH")
+
         binding.dialogBuyChanceButton.setOnClickListener {
             if (binding.numberOfChancesEditText.text.isNullOrBlank()) {
                 Toast.makeText(
@@ -45,6 +48,7 @@ class BuyChancesDialog : BottomSheetDialogFragment() {
             buyChancesFragmentInteraction?.onBuyChancesClicked(
                 binding.numberOfChancesEditText.text?.toString()?.toInt()!!
             )
+            dismiss()
         }
 
         binding.numberOfChancesEditText.addTextChangedListener(object : TextWatcher {

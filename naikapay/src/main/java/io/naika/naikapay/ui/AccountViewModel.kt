@@ -39,6 +39,9 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
     private val _signedTx = MutableLiveData<Transaction>()
     val signedTx: LiveData<Transaction> = _signedTx
 
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
     private val wallet: Wallet = Wallet(application)
     private val ethClient = EthClient()
 
@@ -134,12 +137,10 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun createAccountIfNothingExist(context: android.content.Context) {
+    fun createAccount(context: android.content.Context, passPhrase: String) {
         viewModelScope.launch {
-            val accountList = wallet.getListOfAccounts()
-            if (accountList.isEmpty()) {
-                wallet.createNewAccount(context, "123456")
-            }
+            wallet.createNewAccount(context, passPhrase)
+            getAccountList()
         }
     }
 
@@ -151,14 +152,22 @@ class AccountViewModel(application: Application) : AndroidViewModel(application)
         return ethClient.getSuggestedGasPrice()
     }
 
-    fun signTx(tx: Transaction, addressHash: String) {
+    fun signTx(tx: Transaction, addressHash: String, password: String) {
         viewModelScope.launch {
             if (walletType == WalletChooserDialogFragment.WalletType.NAIKA_PAY) {
                 val account = wallet.getListOfAccounts().find {
                     it.address.hex == addressHash
                 }
-                val signedTx = wallet.signTransaction(tx, account!!, "Creation password", 5)
-                _signedTx.postValue(signedTx)
+
+                try {
+                    val signedTx = wallet.signTransaction(tx, account!!, password, 5)
+                    _signedTx.postValue(signedTx)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    _error.postValue(e.message)
+                }
+
+
             } else {
                 val from = session.approvedAccounts()?.first()
                 val txRequest = System.currentTimeMillis()

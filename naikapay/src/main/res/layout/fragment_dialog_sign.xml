@@ -6,15 +6,53 @@
     android:layout_height="match_parent">
 
 
-    <Button
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/rejectTransaction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Reject"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/signTransaction"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Confirm"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/rejectTransaction"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/outlinedTextField"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:textColorHint="#566665"
+        android:hint="Enter password here"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/signTransaction">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_edit_text"
+            android:inputType="textPassword"
+            android:enabled="true"
+            android:textColor="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <TextView
         android:id="@+id/textView3"
@@ -25,7 +63,7 @@
         android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/signTransaction"
+        app:layout_constraintBottom_toTopOf="@+id/outlinedTextField"
         app:layout_constraintStart_toStartOf="@+id/signTransaction" />
 
     <TextView
@@ -34,6 +72,7 @@
         android:layout_height="wrap_content"
         android:text="US$0.73"
         android:textColor="#80000000"
+        android:visibility="gone"
         android:textSize="14sp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/totalEstimateETH"
@@ -66,11 +105,37 @@
         app:layout_constraintStart_toStartOf="@+id/textView3" />
 
     <TextView
+        android:id="@+id/value_title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:text="Value"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintStart_toStartOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/value_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0.001 ETH"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/value_title_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/value_title_text_view" />
+
+    <TextView
         android:id="@+id/estimateGasDollar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="US$0.73"
         android:textColor="#80000000"
+        android:visibility="gone"
         android:textSize="14sp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/estimateGasETH"
@@ -90,20 +155,76 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textView4" />
 
+
+    <TextView
+        android:id="@+id/to_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To:"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/value_title_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <RelativeLayout
+        android:id="@+id/to_relative_layout"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:padding="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/relative_background"
+        app:layout_constraintBottom_toBottomOf="@+id/to_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/to_text_view"
+        app:layout_constraintTop_toTopOf="@+id/to_text_view">
+
+        <TextView
+            android:id="@+id/to_address_hash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="0xf24s2a6861"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From:"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/to_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <RelativeLayout
         android:id="@+id/relativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:padding="8dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/relative_background"
+        app:layout_constraintBottom_toBottomOf="@+id/title_text_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="@+id/to_relative_layout"
+        app:layout_constraintTop_toTopOf="@+id/title_text_view">
 
         <TextView
             android:id="@+id/address_hash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="0xf24s2a6861"
             android:textColor="#000000"
             android:textSize="14sp" />
@@ -114,23 +235,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:text="0.023 ETH"
+            android:layout_centerVertical="true"
             android:textColor="#000000"
             android:textSize="14sp" />
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/title_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="You are going to pay 0.0006 ETH from below account"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:paddingTop="16dp"
-        android:layout_marginBottom="26dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,14 @@
 package com.example.android.goeth
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -11,9 +16,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import com.example.android.goeth.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.naika.naikapay.toSummarisedAddress
 import io.naika.naikapay.ui.*
+import org.web3j.crypto.TransactionDecoder
+import org.web3j.utils.Numeric
 
 const val CHANCE_PRICE = 0.001
 
@@ -45,7 +53,11 @@ class MainActivity : AppCompatActivity(),
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val signedTxHash = data?.getByteArrayExtra(SIGNED_TX_HASH)
-                mainViewModel.loadContract(signedTxHash)
+                val txSignedHash = Numeric.toHexString(signedTxHash)
+                val tx = TransactionDecoder.decode(txSignedHash)
+                Log.d("Fuck", tx.data)
+                val isClaim = tx.data == CLAIM_METHOD_HEX
+                mainViewModel.loadContract(signedTxHash, isClaim)
             }
         }
 
@@ -74,6 +86,18 @@ class MainActivity : AppCompatActivity(),
         mainViewModel.connectToNetwork()
 
 
+        binding.connectWalletButton.setOnLongClickListener {
+            if (mainViewModel.selectedAddressHash.isNullOrEmpty()) {
+                return@setOnLongClickListener true
+            }
+            val clipboard: ClipboardManager? =
+                getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+            val clip = ClipData.newPlainText("address", mainViewModel.selectedAddressHash)
+            clipboard?.setPrimaryClip(clip)
+            Toast.makeText(this, "address copied to clip board", Toast.LENGTH_LONG).show()
+            true
+        }
+
         binding.connectWalletButton.setOnClickListener {
             if (mainViewModel.isAccountConnected) {
                 val popUpMenu = PopupMenu(this, it)
@@ -100,34 +124,6 @@ class MainActivity : AppCompatActivity(),
                 add<PlayFragment>(R.id.fragment_container_view)
                 addToBackStack("play")
             }
-
-
-            val gifs = listOf("file:///android_asset/heads.gif", "file:///android_asset/tails.gif")
-
-/*            Glide.with(this).asGif().load(gifs[random - 1]).listener(
-                object : RequestListener<GifDrawable> {
-                    override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any?,
-                        target: Target<GifDrawable>?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        return false
-                    }
-
-                    override fun onResourceReady(
-                        resource: GifDrawable?,
-                        model: Any?,
-                        target: Target<GifDrawable>?,
-                        dataSource: DataSource?,
-                        isFirstResource: Boolean
-                    ): Boolean {
-                        resource?.setLoopCount(1)
-                        return false
-                    }
-
-                }
-            ).into(binding.coinTossImageView)*/
         }
 
         binding.buyChancesButton.setOnClickListener {
@@ -144,14 +140,33 @@ class MainActivity : AppCompatActivity(),
             signTxLauncher.launch(intent)
         }
 
+        mainViewModel.claimTX.observe(this) { tx ->
+            val intent: Intent? = Intent()
+            intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
+            intent?.action = ACTION_SIGN_TX
+            intent?.putExtra(EXTRA_PLAIN_TRANSACTION_HASH, tx)
+            intent?.putExtra(EXTRA_SIGNER_ADDRESS_HASH, mainViewModel.selectedAddressHash)
+            signTxLauncher.launch(intent)
+        }
 
-    }
+        mainViewModel.transactionSucceed.observe(this) {
+            if (!it.first) {
+                binding.playButton.isEnabled = true
+                binding.chancesTextView.text =
+                    String.format("%d %s", mainViewModel.chanceLeft, "chance left")
+            }
+            val transactionResponseDialog = TransactionResponseDialog()
+            val args = Bundle()
+            args.putString(TX_HASH, it.second)
+            transactionResponseDialog.arguments = args
+            transactionResponseDialog.show(supportFragmentManager, "tx_success")
+        }
 
-    private fun loadGifs(): List<String>? {
-        val gifs: MutableList<String> = ArrayList()
-        gifs.add("file:///android_asset/heads.gif")
-        gifs.add("file:///android_asset/tails.gif")
-        return gifs
+        mainViewModel.transactionFailed.observe(this) {
+            Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+        }
+
+
     }
 
     private fun disconnectAccount() {
@@ -168,10 +183,16 @@ class MainActivity : AppCompatActivity(),
 
     override fun finishGameWithLost() {
         supportFragmentManager.popBackStack()
+        binding.chancesTextView.text =
+            String.format("%d %s", mainViewModel.chanceLeft, "chance left")
+        binding.playButton.isEnabled = false
     }
 
     override fun claimRewardClicked() {
         supportFragmentManager.popBackStack()
-
+        mainViewModel.createClaimTransaction()
+        binding.chancesTextView.text =
+            String.format("%d %s", mainViewModel.chanceLeft, "chance left")
+        binding.playButton.isEnabled = false
     }
 }

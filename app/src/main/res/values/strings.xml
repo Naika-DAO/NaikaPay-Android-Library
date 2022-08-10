@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoETH</string>
+    <string name="app_name">Coin Toss Game</string>
     <string name="connect_wallet">Connect Wallet</string>
     <string name="wallet_connected">Connected</string>
     <string name="head">Head</string>

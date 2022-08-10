@@ -14,4 +14,8 @@
     <color name="my_blue">#0B0CD9</color>
     <color name="red">#CC1111</color>
     <color name="green">#3D971E</color>
+    <color name="button_color">#F58E78</color>
+    <color name="button_color_disable">#F2DDD8</color>
+    <color name="orange">#FF3000</color>
+
 </resources>

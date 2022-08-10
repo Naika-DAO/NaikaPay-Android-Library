@@ -96,22 +96,27 @@ class PlayFragment : Fragment() {
                         val claimRewardDialogFragment = ClaimRewardDialogFragment()
                         claimRewardDialogFragment.isCancelable = false
                         claimRewardDialogFragment.show(childFragmentManager, "claim")
+                        resetGameData()
 
                     } else {
+                        resetGameData()
                         playFragmentInteraction?.finishGameWithLost()
                     }
-                    mainViewModel.currentRound = 0
-                    mainViewModel.predictedCoinState = 0
-                    mainViewModel.coinTossRounds[0] = -1
-                    mainViewModel.coinTossRounds[1] = -1
-                    mainViewModel.coinTossRounds[2] = -1
-
                 }
             }
 
         }
 
         return root
+    }
+
+    private fun resetGameData() {
+        mainViewModel.chanceLeft = 0
+        mainViewModel.currentRound = 0
+        mainViewModel.predictedCoinState = 0
+        mainViewModel.coinTossRounds[0] = -1
+        mainViewModel.coinTossRounds[1] = -1
+        mainViewModel.coinTossRounds[2] = -1
     }
 
     private fun setUpFirstStep() {
@@ -225,11 +230,7 @@ class PlayFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mainViewModel.currentRound = 0
-        mainViewModel.predictedCoinState = 0
-        mainViewModel.coinTossRounds[0] = -1
-        mainViewModel.coinTossRounds[1] = -1
-        mainViewModel.coinTossRounds[2] = -1
+        resetGameData()
     }
 
     override fun onAttach(context: Context) {
