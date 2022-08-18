@@ -18,6 +18,8 @@ import androidx.fragment.app.commit
 import com.example.android.goeth.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.naika.naikapay.Connection
+import io.naika.naikapay.Payment
 import io.naika.naikapay.toSummarisedAddress
 import io.naika.naikapay.ui.*
 import org.web3j.crypto.TransactionDecoder
@@ -35,18 +37,12 @@ class MainActivity : AppCompatActivity(),
 
     private val mainViewModel: MainViewModel by viewModels()
 
-    var resultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val data: Intent? = result.data
-                val selectedAddress = data?.getStringExtra(ACCOUNT_ADDRESS_HASH)
-            val balance = data?.getDoubleExtra(ACCOUNT_ADDRESS_BALANCE, 0.0)
-            mainViewModel.isAccountConnected = true
-            mainViewModel.selectedAddressHash = selectedAddress!!
-
-        }
+    private val payment by lazy(LazyThreadSafetyMode.NONE) {
+        Payment(context = this)
     }
+
+    private lateinit var paymentConnection: Connection
+
 
     var signTxLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -83,6 +79,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(binding.root)
 
 
+
         mainViewModel.connectToNetwork()
 
 
@@ -109,10 +106,13 @@ class MainActivity : AppCompatActivity(),
 
                 popUpMenu.show()
             } else {
-                val intent: Intent? = Intent()
-                intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
-                intent?.action = ACTION_INTRO
-                chooserLauncher.launch(intent)
+
+                startPaymentConnection()
+
+//                val intent: Intent? = Intent()
+//                intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
+//                intent?.action = ACTION_INTRO
+//                chooserLauncher.launch(intent)
             }
         }
 
@@ -167,6 +167,44 @@ class MainActivity : AppCompatActivity(),
         }
 
 
+    }
+
+    private fun startPaymentConnection() {
+        paymentConnection = payment.initialize {
+            connectionSucceed {
+                Log.d("Payment", "connectionSucceed")
+                connectWalletWithNewMethod()
+            }
+            connectionFailed {
+                Log.d("Payment", "connectionFailed")
+            }
+            disconnected {
+                Log.d("Payment", "disconnected")
+            }
+        }
+    }
+
+    private fun connectWalletWithNewMethod() {
+        payment.connectWallet(
+            registry = activityResultRegistry
+        ) {
+            connectWalletSucceed { accountInfo ->
+                Log.d("Payment", "connectWalletSucceed")
+                mainViewModel.isAccountConnected = true
+                mainViewModel.selectedAddressHash = accountInfo.address
+                binding.connectWalletButton.text = toSummarisedAddress(accountInfo.address)
+                binding.chancesTextView.visibility = View.VISIBLE
+                binding.buyChancesButton.isEnabled = true
+
+            }
+            connectWalletCanceled {
+                Log.d("Payment", "connectWalletCanceled")
+
+            }
+            connectWalletFailed {
+                Log.d("Payment", it.message!!)
+            }
+        }
     }
 
     private fun disconnectAccount() {
