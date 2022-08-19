@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(),
 
             }
             connectionFailed {
-                Log.d("Payment", "connectionFailed")
+                Log.d("Payment", it.message.toString())
             }
             disconnected {
                 Log.d("Payment", "disconnected")
@@ -211,5 +211,10 @@ class MainActivity : AppCompatActivity(),
         binding.chancesTextView.text =
             String.format("%d %s", mainViewModel.chanceLeft, "chance left")
         binding.playButton.isEnabled = false
+    }
+
+    override fun onDestroy() {
+        paymentConnection.disconnect()
+        super.onDestroy()
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import io.naika.naikapay.BuildConfig
 import io.naika.naikapay.PaymentLauncher
 import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.callback.ConnectionCallback
@@ -12,9 +13,12 @@ import io.naika.naikapay.connect_wallet.WalletConnectWeakHolder
 import io.naika.naikapay.constant.Const.NAIKA_SIGNER_PACKAGE_NAME
 import io.naika.naikapay.constant.NaikaSignerIntent
 import io.naika.naikapay.constant.NaikaSignerIntent.RESPONSE_CODE
+import io.naika.naikapay.exception.DisconnectException
 import io.naika.naikapay.receiver.BillingReceiver
 import io.naika.naikapay.receiver.BillingReceiverCommunicator
+import io.naika.naikapay.security.Security
 import io.naika.naikapay.sign_transaction.SignTransactionWeakHolder
+import io.naika.naikapay.takeIf
 import java.lang.ref.WeakReference
 
 internal class ReceiverBillingConnection {
@@ -28,24 +32,56 @@ internal class ReceiverBillingConnection {
     private var walletConnectWeakReference: WeakReference<WalletConnectWeakHolder>? = null
     private var signTransactionWeakReference: WeakReference<SignTransactionWeakHolder>? = null
 
+    private var disconnected: Boolean = false
+
 
     fun startConnection(context: Context, callback: ConnectionCallback): Boolean {
         connectionCallbackReference = WeakReference(callback)
         contextReference = WeakReference(context)
 
 
-
-        return when {
-            canConnectWithReceiverComponent() -> {
-                createReceiverConnection()
-                registerBroadcast()
-                isPurchaseTypeSupported()
-                true
-            }
-            else -> {
-                false
+        if (!BuildConfig.DEBUG) {
+            if (!Security.verifyNaikaSignerIsInstalled(context)) {
+                return false
             }
         }
+
+        createReceiverConnection()
+        registerBroadcast()
+        isPurchaseTypeSupported()
+
+        return true
+
+    }
+
+    private fun createReceiverConnection() {
+        receiverCommunicator = object : BillingReceiverCommunicator {
+            override fun onNewBroadcastReceived(intent: Intent?) {
+                intent?.action?.takeIf(
+                    thisIsTrue = {
+                        !disconnected
+                    },
+                    andIfNot = {
+                        connectionCallbackReference?.get()?.connectionFailed?.invoke(
+                            DisconnectException()
+                        )
+                    }
+                )?.let { action ->
+                    onActionReceived(action, intent.extras)
+                }
+
+            }
+        }
+    }
+
+    private fun registerBroadcast() {
+        BillingReceiver.addObserver(requireNotNull(receiverCommunicator))
+    }
+
+    private fun isPurchaseTypeSupported() {
+        getNewIntentForBroadcast().apply {
+            action = ACTION_BILLING_SUPPORT
+        }.run(::sendBroadcast)
     }
 
     fun signTransaction(
@@ -95,20 +131,6 @@ internal class ReceiverBillingConnection {
         }.run(::sendBroadcast)
     }
 
-    private fun canConnectWithReceiverComponent(): Boolean {
-        return true
-    }
-
-    private fun registerBroadcast() {
-        BillingReceiver.addObserver(requireNotNull(receiverCommunicator))
-    }
-
-    private fun isPurchaseTypeSupported() {
-        getNewIntentForBroadcast().apply {
-            action = ACTION_BILLING_SUPPORT
-        }.run(::sendBroadcast)
-    }
-
     private fun getNewIntentForBroadcast(): Intent {
         val bundle = Bundle().apply {
             putString(KEY_PACKAGE_NAME, contextReference?.get()?.packageName)
@@ -118,14 +140,6 @@ internal class ReceiverBillingConnection {
         return Intent().apply {
             `package` = NAIKA_SIGNER_PACKAGE_NAME
             putExtras(bundle)
-        }
-    }
-
-    private fun createReceiverConnection() {
-        receiverCommunicator = object : BillingReceiverCommunicator {
-            override fun onNewBroadcastReceived(intent: Intent?) {
-                onActionReceived(intent?.action!!, intent?.extras)
-            }
         }
     }
 
@@ -257,6 +271,26 @@ internal class ReceiverBillingConnection {
 
     private fun sendBroadcast(intent: Intent) {
         contextReference?.get()?.sendBroadcast(intent)
+    }
+
+    fun stopConnection() {
+        disconnected = true
+
+        clearReferences()
+
+        receiverCommunicator?.let(BillingReceiver::removeObserver)
+        receiverCommunicator = null
+    }
+
+    private fun clearReferences() {
+        connectionCallbackReference = null
+        contextReference = null
+
+        walletConnectWeakReference?.clear()
+        walletConnectWeakReference = null
+
+        signTransactionWeakReference?.clear()
+        signTransactionWeakReference = null
     }
 
 

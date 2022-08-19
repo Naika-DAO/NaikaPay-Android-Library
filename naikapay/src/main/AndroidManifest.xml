@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.naika.naikapay">
 
+    <queries>
+        <package android:name="io.naika.naikasigner" />
+    </queries>
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>

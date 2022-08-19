@@ -8,6 +8,7 @@ import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.callback.ConnectionCallback
 import io.naika.naikapay.callback.SignTransactionCallback
 import io.naika.naikapay.connection.ReceiverBillingConnection
+import io.naika.naikapay.exception.NaikaSignerNotFoundException
 
 internal class BillingConnection(
     private val context: Context,
@@ -27,20 +28,33 @@ internal class BillingConnection(
         val receiverConnection = ReceiverBillingConnection()
 
 
-        receiverConnection.startConnection(
+        val canConnect = receiverConnection.startConnection(
             context,
             requireNotNull(callback)
         )
+
+        if (!canConnect) {
+            callback?.connectionFailed?.invoke(NaikaSignerNotFoundException())
+        }
 
         billingCommunicator = receiverConnection
         return requireNotNull(callback)
     }
 
     private fun stopConnection() {
-//        runOnCommunicator(TAG_STOP_CONNECTION) { billingCommunicator ->
-//            billingCommunicator.stopConnection()
-//            disconnect()
-//        }
+
+        billingCommunicator?.stopConnection()
+        disconnect()
+
+    }
+
+    private fun disconnect() {
+        callback?.disconnected?.invoke()
+        callback = null
+        paymentLauncher?.unregister()
+        paymentLauncher = null
+        //backgroundThread.dispose()
+        billingCommunicator = null
     }
 
 

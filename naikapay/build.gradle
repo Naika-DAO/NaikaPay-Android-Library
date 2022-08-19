@@ -15,6 +15,13 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    Properties properties = new Properties()
+    properties.load(rootProject.file('naika.properties').newDataInputStream())
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'NAIKA_HASH', "\"${properties.getProperty('naikaReleaseHash')}\""
+    }
+
     buildTypes {
         release {
             minifyEnabled false
