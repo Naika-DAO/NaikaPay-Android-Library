@@ -8,7 +8,6 @@ import android.util.Log
 class BillingReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("Payment", "Fuck")
         Intent().apply {
             action = intent!!.action
             Log.d("Payment", action!!)

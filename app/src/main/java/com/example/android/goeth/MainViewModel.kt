@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     init {
         web3 =
-            Web3j.build(HttpService("http://127.0.0.1:25140"));
+            Web3j.build(HttpService("http://geth.naikadev.com:8545"));
     }
 
     fun connectToNetwork() {
@@ -109,11 +109,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
         val res = web3?.ethSendRawTransaction(txSignedHash)?.sendAsync()?.get()
         res?.let {
             it.error?.let { error ->
-                Log.d("Fuck", error.message)
                 _transactionFailed.postValue(error.message)
             }
             it.result?.let { result ->
-                Log.d("Fuck", result)
                 if (!isClaim) {
                     chanceLeft = 1
                 }

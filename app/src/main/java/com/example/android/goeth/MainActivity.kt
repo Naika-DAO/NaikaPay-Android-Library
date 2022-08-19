@@ -1,15 +1,12 @@
 package com.example.android.goeth
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -19,9 +16,9 @@ import com.example.android.goeth.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import io.naika.naikapay.Connection
+import io.naika.naikapay.ConnectionState
 import io.naika.naikapay.Payment
 import io.naika.naikapay.toSummarisedAddress
-import io.naika.naikapay.ui.*
 import org.web3j.crypto.TransactionDecoder
 import org.web3j.utils.Numeric
 
@@ -44,41 +41,12 @@ class MainActivity : AppCompatActivity(),
     private lateinit var paymentConnection: Connection
 
 
-    var signTxLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data: Intent? = result.data
-                val signedTxHash = data?.getByteArrayExtra(SIGNED_TX_HASH)
-                val txSignedHash = Numeric.toHexString(signedTxHash)
-                val tx = TransactionDecoder.decode(txSignedHash)
-                Log.d("Fuck", tx.data)
-                val isClaim = tx.data == CLAIM_METHOD_HEX
-                mainViewModel.loadContract(signedTxHash, isClaim)
-            }
-        }
-
-    var chooserLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
-                val data: Intent? = result.data
-                val selectedAddress = data?.getStringExtra(ACCOUNT_ADDRESS_HASH)
-                val balance = data?.getDoubleExtra(ACCOUNT_ADDRESS_BALANCE, 0.0)
-                mainViewModel.isAccountConnected = true
-                mainViewModel.selectedAddressHash = selectedAddress!!
-                binding.connectWalletButton.text = toSummarisedAddress(selectedAddress)
-                binding.chancesTextView.visibility = View.VISIBLE
-                binding.buyChancesButton.isEnabled = true
-
-            }
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
+        startPaymentConnection()
 
         mainViewModel.connectToNetwork()
 
@@ -107,12 +75,9 @@ class MainActivity : AppCompatActivity(),
                 popUpMenu.show()
             } else {
 
-                startPaymentConnection()
-
-//                val intent: Intent? = Intent()
-//                intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
-//                intent?.action = ACTION_INTRO
-//                chooserLauncher.launch(intent)
+                if (paymentConnection.getState() == ConnectionState.Connected) {
+                    connectWalletWithNewMethod()
+                }
             }
         }
 
@@ -132,21 +97,12 @@ class MainActivity : AppCompatActivity(),
         }
 
         mainViewModel.tx.observe(this) { tx ->
-            val intent: Intent? = Intent()
-            intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
-            intent?.action = ACTION_SIGN_TX
-            intent?.putExtra(EXTRA_PLAIN_TRANSACTION_HASH, tx)
-            intent?.putExtra(EXTRA_SIGNER_ADDRESS_HASH, mainViewModel.selectedAddressHash)
-            signTxLauncher.launch(intent)
+
+            sendSignTxRequest(tx)
         }
 
         mainViewModel.claimTX.observe(this) { tx ->
-            val intent: Intent? = Intent()
-            intent?.setClassName(this, "io.naika.naikapay.ui.WalletActivity")
-            intent?.action = ACTION_SIGN_TX
-            intent?.putExtra(EXTRA_PLAIN_TRANSACTION_HASH, tx)
-            intent?.putExtra(EXTRA_SIGNER_ADDRESS_HASH, mainViewModel.selectedAddressHash)
-            signTxLauncher.launch(intent)
+            sendSignTxRequest(tx)
         }
 
         mainViewModel.transactionSucceed.observe(this) {
@@ -169,11 +125,34 @@ class MainActivity : AppCompatActivity(),
 
     }
 
+    private fun sendSignTxRequest(tx: ByteArray) {
+        payment.signTransaction(
+            registry = activityResultRegistry,
+            tx,
+            mainViewModel.selectedAddressHash
+        ) {
+            signTransactionSucceed { signTransactionResponse ->
+                Log.d("Payment", signTransactionResponse.signedTxByteArray.toString())
+                val txSignedHexString =
+                    Numeric.toHexString(signTransactionResponse.signedTxByteArray)
+                val transaction = TransactionDecoder.decode(txSignedHexString)
+                val isClaim = transaction.data == CLAIM_METHOD_HEX
+                mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+            }
+            signTransactionCanceled {
+                Log.d("Payment", "signTransactionCanceled")
+            }
+            signTransactionFailed { reason ->
+                Log.d("Payment", reason.message.toString())
+            }
+        }
+    }
+
     private fun startPaymentConnection() {
         paymentConnection = payment.initialize {
             connectionSucceed {
                 Log.d("Payment", "connectionSucceed")
-                connectWalletWithNewMethod()
+
             }
             connectionFailed {
                 Log.d("Payment", "connectionFailed")

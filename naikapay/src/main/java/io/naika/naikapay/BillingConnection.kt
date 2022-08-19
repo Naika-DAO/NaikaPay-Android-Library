@@ -6,11 +6,13 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultRegistry
 import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.callback.ConnectionCallback
+import io.naika.naikapay.callback.SignTransactionCallback
 import io.naika.naikapay.connection.ReceiverBillingConnection
 
 internal class BillingConnection(
     private val context: Context,
-    private val walletConnectResultParser: WalletConnectResultParser
+    private val walletConnectResultParser: WalletConnectResultParser,
+    private val signTransactionResultParser: SignTransactionResultParser
 ) {
 
     private var callback: ConnectionCallback? = null
@@ -42,12 +44,55 @@ internal class BillingConnection(
     }
 
 
+    fun signTransaction(
+        registry: ActivityResultRegistry,
+        unsignedTx: ByteArray,
+        selectedAccountHash: String,
+        callback: SignTransactionCallback.() -> Unit
+    ) {
+        paymentLauncher = PaymentLauncher.Builder(registry) {
+            onSignTransactionActivityResult(it, callback)
+        }.build()
+
+        billingCommunicator?.signTransaction(
+            requireNotNull(paymentLauncher),
+            unsignedTx,
+            selectedAccountHash,
+            callback
+        )
+    }
+
+    private fun onSignTransactionActivityResult(
+        activityResult: ActivityResult,
+        callback: SignTransactionCallback.() -> Unit
+    ) {
+        when (activityResult.resultCode) {
+            Activity.RESULT_OK -> {
+                signTransactionResultParser.handleReceivedResult(
+                    activityResult.data,
+                    callback
+                )
+            }
+            Activity.RESULT_CANCELED -> {
+                SignTransactionCallback().apply(callback)
+                    .signTransactionCanceled
+                    .invoke()
+            }
+            else -> {
+                SignTransactionCallback().apply(callback)
+                    .signTransactionFailed
+                    .invoke(IllegalStateException("Result code is not valid"))
+            }
+        }
+    }
+
+
     fun connectWallet(
         registry: ActivityResultRegistry,
         callback: ConnectWalletCallback.() -> Unit
     ) {
         paymentLauncher = PaymentLauncher.Builder(registry) {
-            onActivityResult(it, callback)
+            onConnectWalletActivityResult(it, callback)
         }.build()
 
         billingCommunicator?.connectWallet(
@@ -57,7 +102,7 @@ internal class BillingConnection(
 
     }
 
-    private fun onActivityResult(
+    private fun onConnectWalletActivityResult(
         activityResult: ActivityResult,
         connectWalletCallback: ConnectWalletCallback.() -> Unit
     ) {

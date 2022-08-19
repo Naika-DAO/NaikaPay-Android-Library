@@ -5,11 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
-        <activity
-            android:name="io.naika.naikapay.ui.WalletActivity"
-            android:exported="true"
-            android:label=""
-            android:theme="@style/Theme.Transparent" />
 
         <receiver
             android:name=".receiver.BillingReceiver"
@@ -18,6 +13,7 @@
             <intent-filter>
                 <action android:name="io.naika.naikapay.connectWallet" />
                 <action android:name="io.naika.naikapay.billingSupport" />
+                <action android:name="io.naika.naikapay.signTransaction" />
             </intent-filter>
         </receiver>
     </application>
