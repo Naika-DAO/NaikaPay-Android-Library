@@ -8,12 +8,16 @@ import io.naika.naikapay.BuildConfig
 import io.naika.naikapay.PaymentLauncher
 import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.callback.ConnectionCallback
+import io.naika.naikapay.callback.SendTransactionCallback
 import io.naika.naikapay.callback.SignTransactionCallback
 import io.naika.naikapay.connect_wallet.WalletConnectWeakHolder
 import io.naika.naikapay.constant.Const.NAIKA_SIGNER_PACKAGE_NAME
 import io.naika.naikapay.constant.NaikaSignerIntent
 import io.naika.naikapay.constant.NaikaSignerIntent.RESPONSE_CODE
+import io.naika.naikapay.entity.SendTransactionResponse
 import io.naika.naikapay.exception.DisconnectException
+import io.naika.naikapay.exception.NaikaSignerNotSupportedException
+import io.naika.naikapay.exception.SendTransactionException
 import io.naika.naikapay.receiver.BillingReceiver
 import io.naika.naikapay.receiver.BillingReceiverCommunicator
 import io.naika.naikapay.security.Security
@@ -31,6 +35,8 @@ internal class ReceiverBillingConnection {
 
     private var walletConnectWeakReference: WeakReference<WalletConnectWeakHolder>? = null
     private var signTransactionWeakReference: WeakReference<SignTransactionWeakHolder>? = null
+
+    private var sendTxCallback: (SendTransactionCallback.() -> Unit)? = null
 
     private var disconnected: Boolean = false
 
@@ -84,6 +90,17 @@ internal class ReceiverBillingConnection {
         }.run(::sendBroadcast)
     }
 
+    fun sendTransaction(signedTx: ByteArray, callback: SendTransactionCallback.() -> Unit) {
+        sendTxCallback = callback
+
+        getNewIntentForBroadcast().apply {
+            action = ACTION_SEND_TRANSACTION
+            putExtra(KEY_SIGNED_TX_BYTES_FOR_SENDING, signedTx)
+        }.run(::sendBroadcast)
+
+    }
+
+
     fun signTransaction(
         paymentLauncher: PaymentLauncher,
         unsignedTx: ByteArray,
@@ -134,8 +151,6 @@ internal class ReceiverBillingConnection {
     private fun getNewIntentForBroadcast(): Intent {
         val bundle = Bundle().apply {
             putString(KEY_PACKAGE_NAME, contextReference?.get()?.packageName)
-            //putString(KEY_SECURE, getSecureSignature())
-            //putInt(KEY_API_VERSION, Billing.IN_APP_BILLING_VERSION)
         }
         return Intent().apply {
             `package` = NAIKA_SIGNER_PACKAGE_NAME
@@ -153,6 +168,27 @@ internal class ReceiverBillingConnection {
             }
             ACTION_RECEIVE_SIGN_TRANSACTION -> {
                 onTransactionSignedBroadcastReceived(extras)
+            }
+            ACTION_RECEIVE_SEND_TRANSACTION -> {
+                onTransactionSendBroadcastReceived(extras)
+            }
+        }
+    }
+
+    private fun onTransactionSendBroadcastReceived(extras: Bundle?) {
+        if (sendTxCallback == null) {
+            return
+        }
+        SendTransactionCallback().apply(requireNotNull(sendTxCallback)).run {
+            if (isResponseSucceed(extras)) {
+                val txHash = extras?.getString(KEY_RESPONSE_SEND_TRANSACTION_TX_HASH, "")
+                sendTransactionSucceed.invoke(SendTransactionResponse(txHash!!))
+            } else {
+                val reasonMessage = extras?.getString(
+                    KEY_RESPONSE_SEND_TRANSACTION_ERROR,
+                    "Could not send transaction"
+                )
+                sendTransactionFailed.invoke(SendTransactionException(reasonMessage!!))
             }
         }
     }
@@ -174,7 +210,7 @@ internal class ReceiverBillingConnection {
             getSignTransactionCallback()?.let { signTransactionCallback ->
                 SignTransactionCallback()
                     .apply(signTransactionCallback)
-                    .signTransactionFailed.invoke(IllegalArgumentException("why!"))
+                    .signTransactionFailed.invoke(DisconnectException())
             }
         }
     }
@@ -192,12 +228,12 @@ internal class ReceiverBillingConnection {
             }
             !isResponseSucceed -> {
                 connectionCallbackReference?.get()?.connectionFailed?.invoke(
-                    IllegalArgumentException("Why")
+                    NaikaSignerNotSupportedException()
                 )
             }
             else -> {
                 connectionCallbackReference?.get()?.connectionFailed?.invoke(
-                    IllegalArgumentException("Why")
+                    NaikaSignerNotSupportedException()
                 )
             }
         }
@@ -213,14 +249,14 @@ internal class ReceiverBillingConnection {
                     )
                 }
                 else -> {
-                    // invalid state, we receive purchase but all reference is null, might be connection disconnected
+                    // invalid state
                 }
             }
         } else {
             getWalletConnectCallback()?.let { walletConnectCallback ->
                 ConnectWalletCallback()
                     .apply(walletConnectCallback)
-                    .connectWalletFailed.invoke(IllegalArgumentException("why!"))
+                    .connectWalletFailed.invoke(DisconnectException())
             }
         }
     }
@@ -286,6 +322,8 @@ internal class ReceiverBillingConnection {
         connectionCallbackReference = null
         contextReference = null
 
+        sendTxCallback = null
+
         walletConnectWeakReference?.clear()
         walletConnectWeakReference = null
 
@@ -301,16 +339,22 @@ internal class ReceiverBillingConnection {
         private const val ACTION_BILLING_SUPPORT = ACTION_NAIKA_SIGNER_BASE + "billingSupport"
         private const val ACTION_CONNECT_WALLET = ACTION_NAIKA_SIGNER_BASE + "connectWallet"
         private const val ACTION_SIGN_TRANSACTION = ACTION_NAIKA_SIGNER_BASE + "signTransaction"
+        private const val ACTION_SEND_TRANSACTION = ACTION_NAIKA_SIGNER_BASE + "sendTransaction"
 
         private const val ACTION_RECEIVE_WALLET_CONNECT = "io.naika.naikapay.connectWallet"
         private const val ACTION_RECEIVE_BILLING_SUPPORT = "io.naika.naikapay.billingSupport"
         private const val ACTION_RECEIVE_SIGN_TRANSACTION = "io.naika.naikapay.signTransaction"
+        private const val ACTION_RECEIVE_SEND_TRANSACTION = "io.naika.naikapay.sendTransaction"
 
         private const val KEY_PACKAGE_NAME = "packageName"
         private const val KEY_RESPONSE_CONNECT_WALLET_INTENT = "CONNECT_WALLET_INTENT"
         private const val KEY_RESPONSE_SIGN_TRANSACTION_INTENT = "SIGN_TX_INTENT"
+        private const val KEY_RESPONSE_SEND_TRANSACTION_TX_HASH = "SEND_TX_HASH"
+        private const val KEY_RESPONSE_SEND_TRANSACTION_ERROR = "SEND_TX_ERROR"
+
         private const val KEY_SIGN_TX_BYTES = "TX_BYTES"
         private const val KEY_SIGN_SELECTED_ADDRESS = "SELECTED_ADDRESS"
+        private const val KEY_SIGNED_TX_BYTES_FOR_SENDING = "SEND_TX_BYTES"
     }
 
 }

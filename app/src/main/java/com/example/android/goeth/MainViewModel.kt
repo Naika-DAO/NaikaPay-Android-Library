@@ -49,7 +49,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     init {
         web3 =
-            Web3j.build(HttpService("http://geth.naikadev.com:8545"));
+            Web3j.build(HttpService("http://geth.naikadev.com:8545"))
     }
 
     fun connectToNetwork() {

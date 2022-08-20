@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultRegistry
 import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.callback.ConnectionCallback
+import io.naika.naikapay.callback.SendTransactionCallback
 import io.naika.naikapay.callback.SignTransactionCallback
 import io.naika.naikapay.connection.ReceiverBillingConnection
 import io.naika.naikapay.exception.NaikaSignerNotFoundException
@@ -55,6 +56,13 @@ internal class BillingConnection(
         paymentLauncher = null
         //backgroundThread.dispose()
         billingCommunicator = null
+    }
+
+    fun sendTransaction(signedTx: ByteArray, callback: SendTransactionCallback.() -> Unit) {
+        billingCommunicator?.sendTransaction(
+            signedTx,
+            callback
+        )
     }
 
 
@@ -145,12 +153,6 @@ internal class BillingConnection(
 
         const val PAYMENT_SERVICE_KEY = "payment_service_key"
 
-        private const val TAG_STOP_CONNECTION = "stopConnection"
-        private const val TAG_QUERY_PURCHASE_PRODUCT = "queryPurchasedProducts"
-        private const val TAG_CONSUME = "consume"
-        private const val TAG_PURCHASE = "purchase"
-        private const val TAG_GET_SKU_DETAIL = "skuDetial"
-        private const val TAG_CHECK_TRIAL_SUBSCRIPTION = "checkTrialSubscription"
     }
 
 

@@ -18,6 +18,7 @@
                 <action android:name="io.naika.naikapay.connectWallet" />
                 <action android:name="io.naika.naikapay.billingSupport" />
                 <action android:name="io.naika.naikapay.signTransaction" />
+                <action android:name="io.naika.naikapay.sendTransaction" />
             </intent-filter>
         </receiver>
     </application>

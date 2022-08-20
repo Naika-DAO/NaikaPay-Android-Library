@@ -137,7 +137,15 @@ class MainActivity : AppCompatActivity(),
                     Numeric.toHexString(signTransactionResponse.signedTxByteArray)
                 val transaction = TransactionDecoder.decode(txSignedHexString)
                 val isClaim = transaction.data == CLAIM_METHOD_HEX
-                mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+                //mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+                payment.sendTransaction(signTransactionResponse.signedTxByteArray) {
+                    sendTransactionSucceed {
+                        Log.d("Payment", it.txHash)
+                    }
+                    sendTransactionFailed {
+                        Log.d("Payment", it.message!!)
+                    }
+                }
             }
             signTransactionCanceled {
                 Log.d("Payment", "signTransactionCanceled")
