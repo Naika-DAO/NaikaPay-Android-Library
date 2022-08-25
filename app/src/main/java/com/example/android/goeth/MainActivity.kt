@@ -15,10 +15,7 @@ import androidx.fragment.app.commit
 import com.example.android.goeth.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import io.naika.naikapay.Connection
-import io.naika.naikapay.ConnectionState
-import io.naika.naikapay.Payment
-import io.naika.naikapay.toSummarisedAddress
+import io.naika.naikapay.*
 import org.web3j.crypto.TransactionDecoder
 import org.web3j.utils.Numeric
 
@@ -129,7 +126,8 @@ class MainActivity : AppCompatActivity(),
         payment.signTransaction(
             registry = activityResultRegistry,
             tx,
-            mainViewModel.selectedAddressHash
+            mainViewModel.selectedAddressHash,
+            CoinToss.ABI
         ) {
             signTransactionSucceed { signTransactionResponse ->
                 Log.d("Payment", signTransactionResponse.signedTxByteArray.toString())
@@ -157,7 +155,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun startPaymentConnection() {
-        paymentConnection = payment.initialize {
+        paymentConnection = payment.initialize(NetworkType.ETH_MAIN) {
             connectionSucceed {
                 Log.d("Payment", "connectionSucceed")
 
@@ -182,6 +180,15 @@ class MainActivity : AppCompatActivity(),
                 binding.connectWalletButton.text = toSummarisedAddress(accountInfo.address)
                 binding.chancesTextView.visibility = View.VISIBLE
                 binding.buyChancesButton.isEnabled = true
+
+                payment.getGasPrice {
+                    gasPriceSucceed {
+                        Log.d("Payment", it.gasPrice.toString())
+                    }
+                    gasPriceFailed {
+                        Log.d("Payment", it.message!!)
+                    }
+                }
 
             }
             connectWalletCanceled {

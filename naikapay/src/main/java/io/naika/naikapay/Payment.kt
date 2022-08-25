@@ -2,10 +2,7 @@ package io.naika.naikapay
 
 import android.content.Context
 import androidx.activity.result.ActivityResultRegistry
-import io.naika.naikapay.callback.ConnectWalletCallback
-import io.naika.naikapay.callback.ConnectionCallback
-import io.naika.naikapay.callback.SendTransactionCallback
-import io.naika.naikapay.callback.SignTransactionCallback
+import io.naika.naikapay.callback.*
 
 class Payment(
     context: Context
@@ -19,8 +16,8 @@ class Payment(
         BillingConnection(context = context, walletConnectResultParser, signTransactionResultParser)
 
 
-    fun initialize(callback: ConnectionCallback.() -> Unit): Connection {
-        return connection.startConnection(callback)
+    fun initialize(networkType: NetworkType, callback: ConnectionCallback.() -> Unit): Connection {
+        return connection.startConnection(networkType, callback)
     }
 
     fun connectWallet(
@@ -35,12 +32,14 @@ class Payment(
         registry: ActivityResultRegistry,
         unsignedTx: ByteArray,
         selectedAccountHash: String,
+        abi: String,
         callback: SignTransactionCallback.() -> Unit
     ) {
         connection.signTransaction(
             registry,
             unsignedTx,
             selectedAccountHash,
+            abi,
             callback
         )
     }
@@ -51,6 +50,28 @@ class Payment(
     ) {
         connection.sendTransaction(
             signedTx,
+            callback
+        )
+    }
+
+    fun getGasPrice(
+        callback: GasPriceCallback.() -> Unit
+    ) {
+        connection.getGasPrice(
+            callback
+        )
+    }
+
+    fun ethCall(
+        from: String,
+        to: String,
+        data: String,
+        callback: EthCallCallback.() -> Unit
+    ) {
+        connection.ethCall(
+            from,
+            to,
+            data,
             callback
         )
     }

@@ -16,9 +16,11 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="io.naika.naikapay.connectWallet" />
-                <action android:name="io.naika.naikapay.billingSupport" />
+                <action android:name="io.naika.naikapay.networkSupport" />
                 <action android:name="io.naika.naikapay.signTransaction" />
                 <action android:name="io.naika.naikapay.sendTransaction" />
+                <action android:name="io.naika.naikapay.gasPrice" />
+                <action android:name="io.naika.naikapay.ethCall" />
             </intent-filter>
         </receiver>
     </application>

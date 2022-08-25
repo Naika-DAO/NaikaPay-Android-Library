@@ -4,10 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultRegistry
-import io.naika.naikapay.callback.ConnectWalletCallback
-import io.naika.naikapay.callback.ConnectionCallback
-import io.naika.naikapay.callback.SendTransactionCallback
-import io.naika.naikapay.callback.SignTransactionCallback
+import io.naika.naikapay.callback.*
 import io.naika.naikapay.connection.ReceiverBillingConnection
 import io.naika.naikapay.exception.NaikaSignerNotFoundException
 
@@ -22,7 +19,10 @@ internal class BillingConnection(
 
     private var billingCommunicator: ReceiverBillingConnection? = null
 
-    internal fun startConnection(connectionCallback: ConnectionCallback.() -> Unit): Connection {
+    internal fun startConnection(
+        networkType: NetworkType,
+        connectionCallback: ConnectionCallback.() -> Unit
+    ): Connection {
         callback = ConnectionCallback(disconnect = ::stopConnection).apply(connectionCallback)
 
 
@@ -31,6 +31,7 @@ internal class BillingConnection(
 
         val canConnect = receiverConnection.startConnection(
             context,
+            networkType,
             requireNotNull(callback)
         )
 
@@ -58,6 +59,21 @@ internal class BillingConnection(
         billingCommunicator = null
     }
 
+    fun ethCall(from: String, to: String, data: String, callback: EthCallCallback.() -> Unit) {
+        billingCommunicator?.ethCall(
+            from,
+            to,
+            data,
+            callback
+        )
+    }
+
+    fun getGasPrice(callback: GasPriceCallback.() -> Unit) {
+        billingCommunicator?.getGasPrice(
+            callback
+        )
+    }
+
     fun sendTransaction(signedTx: ByteArray, callback: SendTransactionCallback.() -> Unit) {
         billingCommunicator?.sendTransaction(
             signedTx,
@@ -70,6 +86,7 @@ internal class BillingConnection(
         registry: ActivityResultRegistry,
         unsignedTx: ByteArray,
         selectedAccountHash: String,
+        abi: String,
         callback: SignTransactionCallback.() -> Unit
     ) {
         paymentLauncher = PaymentLauncher.Builder(registry) {
@@ -80,6 +97,7 @@ internal class BillingConnection(
             requireNotNull(paymentLauncher),
             unsignedTx,
             selectedAccountHash,
+            abi,
             callback
         )
     }
