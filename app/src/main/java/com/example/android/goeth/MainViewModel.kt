@@ -86,22 +86,39 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun createTransaction() {
-        val ethGetTransactionCount: EthGetTransactionCount = web3?.ethGetTransactionCount(
-            selectedAddressHash, DefaultBlockParameterName.LATEST
-        )?.sendAsync()?.get()!!
-        val gasPrice = web3?.ethGasPrice()?.sendAsync()?.get()
-        val gasLimit = BigInteger("1000000")
-        val data = BUY_CHANCE_METHOD_HEX
-        val transaction = RawTransaction.createTransaction(
-            ethGetTransactionCount.transactionCount,
-            gasPrice?.gasPrice,
-            gasLimit,
-            SMART_CONTRACT_HASH_ADDRESS,
-            BigInteger("1000000000000000"),
-            data
-        )
-        val byteArray = TransactionEncoder.encode(transaction, 5L)
-        _tx.postValue(byteArray)
+        try {
+            val ethGetTransactionCount: EthGetTransactionCount = web3?.ethGetTransactionCount(
+                selectedAddressHash, DefaultBlockParameterName.LATEST
+            )?.sendAsync()?.get()!!
+            val gasPrice = web3?.ethGasPrice()?.sendAsync()?.get()
+            val gasLimit = BigInteger("1000000")
+            val data = BUY_CHANCE_METHOD_HEX
+            val transaction = RawTransaction.createTransaction(
+                ethGetTransactionCount.transactionCount,
+                gasPrice?.gasPrice,
+                gasLimit,
+                SMART_CONTRACT_HASH_ADDRESS,
+                BigInteger("1000000000000000"),
+                data
+            )
+            val byteArray = TransactionEncoder.encode(transaction, 5L)
+            _tx.postValue(byteArray)
+        } catch (e: Exception) {
+            _transactionFailed.postValue(e.message)
+/*            val gasLimit = BigInteger("1000000")
+            val data = BUY_CHANCE_METHOD_HEX
+            val transaction = RawTransaction.createTransaction(
+                BigInteger("10"),
+                BigInteger("100000000000"),
+                gasLimit,
+                SMART_CONTRACT_HASH_ADDRESS,
+                BigInteger("1000000000000000"),
+                data
+            )
+            val byteArray = TransactionEncoder.encode(transaction, 5L)
+            _tx.postValue(byteArray)*/
+        }
+
     }
 
     fun loadContract(signedTxHash: ByteArray?, isClaim: Boolean) {

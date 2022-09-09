@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 
 internal class PaymentLauncher private constructor(
     val activityLauncher: ActivityResultLauncher<Intent>,
-    val intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private val intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 ) {
 
     class Builder(

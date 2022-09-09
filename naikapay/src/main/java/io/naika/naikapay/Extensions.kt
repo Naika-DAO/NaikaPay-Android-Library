@@ -6,7 +6,7 @@ fun toSummarisedAddress(addressHash: String): String {
     val dots = "....."
     val size = addressHash.length
     val lastSection = addressHash.subSequence(size - 6, size)
-    return "$firstSection$dots$lastSection".toLowerCase()
+    return "$firstSection$dots$lastSection".lowercase()
 }
 
 
