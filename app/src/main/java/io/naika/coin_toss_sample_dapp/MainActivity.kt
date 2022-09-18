@@ -12,13 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
-import com.example.android.goeth.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.naika.coin_toss_sample_dapp.databinding.ActivityMainBinding
 import io.naika.naikapay.*
-import org.web3j.crypto.TransactionDecoder
-import org.web3j.utils.Numeric
 
+
+const val LOG_TAG = "Payment"
 const val CHANCE_PRICE = 0.001
 
 @AndroidEntryPoint
@@ -49,14 +49,15 @@ class MainActivity : AppCompatActivity(),
 
 
         binding.connectWalletButton.setOnLongClickListener {
-            if (mainViewModel.selectedAddressHash.isNullOrEmpty()) {
+            if (mainViewModel.selectedAddressHash.isEmpty()) {
                 return@setOnLongClickListener true
             }
             val clipboard: ClipboardManager? =
                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
             val clip = ClipData.newPlainText("address", mainViewModel.selectedAddressHash)
             clipboard?.setPrimaryClip(clip)
-            Toast.makeText(this, "address copied to clip board", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.toast_text_address_copied), Toast.LENGTH_LONG)
+                .show()
             true
         }
 
@@ -130,26 +131,34 @@ class MainActivity : AppCompatActivity(),
             CoinToss.ABI
         ) {
             signTransactionSucceed { signTransactionResponse ->
-                Log.d("Payment", signTransactionResponse.signedTxByteArray.toString())
-                val txSignedHexString =
-                    Numeric.toHexString(signTransactionResponse.signedTxByteArray)
-                val transaction = TransactionDecoder.decode(txSignedHexString)
-                val isClaim = transaction.data == CLAIM_METHOD_HEX
-                //mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+
+                //You can send transaction to the network by NaikaPay SDK or You can send it yourself with a thirdParty
+
+                /*
+                * Send transaction with web3j library
+                * val txSignedHexString = Numeric.toHexString(signTransactionResponse.signedTxByteArray)
+                * val transaction = TransactionDecoder.decode(txSignedHexString)
+                * val isClaim = transaction.data == CLAIM_METHOD_HEX
+                * mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+                * */
+
+                /*
+                * Send transaction with NaikaPay SDK
+                * */
                 payment.sendTransaction(signTransactionResponse.signedTxByteArray) {
                     sendTransactionSucceed {
-                        Log.d("Payment", it.txHash)
+                        Log.d(LOG_TAG, it.txHash)
                     }
                     sendTransactionFailed {
-                        Log.d("Payment", it.message!!)
+                        Log.d(LOG_TAG, it.message!!)
                     }
                 }
             }
             signTransactionCanceled {
-                Log.d("Payment", "signTransactionCanceled")
+                Log.d(LOG_TAG, "signTransactionCanceled")
             }
             signTransactionFailed { reason ->
-                Log.d("Payment", reason.message.toString())
+                Log.d(LOG_TAG, reason.message.toString())
             }
         }
     }
@@ -157,14 +166,14 @@ class MainActivity : AppCompatActivity(),
     private fun startPaymentConnection() {
         paymentConnection = payment.initialize(NetworkType.ETH_MAIN) {
             connectionSucceed {
-                Log.d("Payment", "connectionSucceed")
+                Log.d(LOG_TAG, "connectionSucceed")
 
             }
             connectionFailed {
-                Log.d("Payment", it.message.toString())
+                Log.d(LOG_TAG, it.message.toString())
             }
             disconnected {
-                Log.d("Payment", "disconnected")
+                Log.d(LOG_TAG, "disconnected")
             }
         }
     }
@@ -174,7 +183,7 @@ class MainActivity : AppCompatActivity(),
             registry = activityResultRegistry
         ) {
             connectWalletSucceed { accountInfo ->
-                Log.d("Payment", "connectWalletSucceed")
+                Log.d(LOG_TAG, "connectWalletSucceed")
                 mainViewModel.isAccountConnected = true
                 mainViewModel.selectedAddressHash = accountInfo.address
                 binding.connectWalletButton.text = toSummarisedAddress(accountInfo.address)
@@ -183,20 +192,20 @@ class MainActivity : AppCompatActivity(),
 
                 payment.getGasPrice {
                     gasPriceSucceed {
-                        Log.d("Payment", it.gasPrice.toString())
+                        Log.d(LOG_TAG, it.gasPrice.toString())
                     }
                     gasPriceFailed {
-                        Log.d("Payment", it.message!!)
+                        Log.d(LOG_TAG, it.message!!)
                     }
                 }
 
             }
             connectWalletCanceled {
-                Log.d("Payment", "connectWalletCanceled")
+                Log.d(LOG_TAG, "connectWalletCanceled")
 
             }
             connectWalletFailed {
-                Log.d("Payment", it.message!!)
+                Log.d(LOG_TAG, it.message!!)
             }
         }
     }
@@ -216,7 +225,11 @@ class MainActivity : AppCompatActivity(),
     override fun finishGameWithLost() {
         supportFragmentManager.popBackStack()
         binding.chancesTextView.text =
-            String.format("%d %s", mainViewModel.chanceLeft, "chance left")
+            String.format(
+                "%d %s",
+                mainViewModel.chanceLeft,
+                getString(R.string.general_text_chance_left)
+            )
         binding.playButton.isEnabled = false
     }
 
@@ -224,7 +237,11 @@ class MainActivity : AppCompatActivity(),
         supportFragmentManager.popBackStack()
         mainViewModel.createClaimTransaction()
         binding.chancesTextView.text =
-            String.format("%d %s", mainViewModel.chanceLeft, "chance left")
+            String.format(
+                "%d %s",
+                mainViewModel.chanceLeft,
+                getString(R.string.general_text_chance_left)
+            )
         binding.playButton.isEnabled = false
     }
 

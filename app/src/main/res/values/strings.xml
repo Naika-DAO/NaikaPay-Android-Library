@@ -9,4 +9,7 @@
     <string name="play_second_round">Play Second Round</string>
     <string name="play_third_round">Play Third Round</string>
     <string name="toss_the_coin">Toss the coin</string>
+    <string name="general_text_finish">Finish</string>
+    <string name="general_text_chance_left">chance left</string>
+    <string name="toast_text_address_copied">address copied to clip board</string>
 </resources>

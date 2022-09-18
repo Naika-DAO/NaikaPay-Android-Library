@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
-import com.example.android.goeth.databinding.FragmentPlayBinding
+import io.naika.coin_toss_sample_dapp.databinding.FragmentPlayBinding
 
 class PlayFragment : Fragment() {
 
@@ -221,7 +221,7 @@ class PlayFragment : Fragment() {
 
             }
             2 -> {
-                binding.tossCoinButton.text = "Finish"
+                binding.tossCoinButton.text = getString(R.string.general_text_finish)
 
             }
         }

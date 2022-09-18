@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.example.android.goeth.databinding.DialogBuyChancesBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.naika.coin_toss_sample_dapp.databinding.DialogBuyChancesBinding
 
 
 class BuyChancesDialog : BottomSheetDialogFragment() {

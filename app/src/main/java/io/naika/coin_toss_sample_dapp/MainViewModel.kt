@@ -105,23 +105,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
             _tx.postValue(byteArray)
         } catch (e: Exception) {
             _transactionFailed.postValue(e.message)
-/*            val gasLimit = BigInteger("1000000")
-            val data = BUY_CHANCE_METHOD_HEX
-            val transaction = RawTransaction.createTransaction(
-                BigInteger("10"),
-                BigInteger("100000000000"),
-                gasLimit,
-                SMART_CONTRACT_HASH_ADDRESS,
-                BigInteger("1000000000000000"),
-                data
-            )
-            val byteArray = TransactionEncoder.encode(transaction, 5L)
-            _tx.postValue(byteArray)*/
         }
 
     }
 
-    fun loadContract(signedTxHash: ByteArray?, isClaim: Boolean) {
+    fun sendTransactionToNetwork(signedTxHash: ByteArray?, isClaim: Boolean) {
         val txSignedHash = Numeric.toHexString(signedTxHash)
         val res = web3?.ethSendRawTransaction(txSignedHash)?.sendAsync()?.get()
         res?.let {
@@ -135,30 +123,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 _transactionSucceed.postValue(Pair(isClaim, result))
             }
         }
-/*        val coinToss = CoinToss.load(
-            SMART_CONTRACT_HASH_ADDRESS,
-            web3,
-            rawTransaction,
-            object : ContractGasProvider {
-                override fun getGasPrice(contractFunc: String?): BigInteger {
-                    return BigInteger.valueOf(22_000_000_000L)
-                }
-
-                override fun getGasPrice(): BigInteger {
-                    return BigInteger.valueOf(22_000_000_000L)
-                }
-
-                override fun getGasLimit(contractFunc: String?): BigInteger {
-                    return BigInteger.valueOf(4_300_000);
-                }
-
-                override fun getGasLimit(): BigInteger {
-                    return BigInteger.valueOf(4_300_000);
-                }
-
-            }
-        )*/
-
     }
 
 
