@@ -1,8 +1,7 @@
-package com.example.android.goeth
+package io.naika.coin_toss_sample_dapp
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).

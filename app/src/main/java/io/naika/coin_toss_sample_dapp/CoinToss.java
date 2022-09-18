@@ -1,4 +1,4 @@
-package com.example.android.goeth;
+package io.naika.coin_toss_sample_dapp;
 
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;

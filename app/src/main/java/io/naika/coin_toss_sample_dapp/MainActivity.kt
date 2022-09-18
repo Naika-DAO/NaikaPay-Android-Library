@@ -1,4 +1,4 @@
-package com.example.android.goeth
+package io.naika.coin_toss_sample_dapp
 
 import android.content.ClipData
 import android.content.ClipboardManager

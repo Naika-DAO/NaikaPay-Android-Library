@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".MainActivity">
+    tools:context="io.naika.coin_toss_sample_dapp.MainActivity">
 
 
     <com.google.android.material.button.MaterialButton
