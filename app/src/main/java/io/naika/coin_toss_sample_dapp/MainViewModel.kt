@@ -21,7 +21,6 @@ import javax.inject.Inject
 const val SMART_CONTRACT_HASH_ADDRESS = "0xfff435b6d92e1cf601843ecbdbbc64da127a9bdd"
 const val BUY_CHANCE_METHOD_HEX = "1734539f"
 const val CLAIM_METHOD_HEX = "4e71d92d"
-//0xcda753B61bF622c8475769202f9533820a1AD6f9
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {

@@ -55,7 +55,6 @@ internal class BillingConnection(
         callback = null
         paymentLauncher?.unregister()
         paymentLauncher = null
-        //backgroundThread.dispose()
         billingCommunicator = null
     }
 

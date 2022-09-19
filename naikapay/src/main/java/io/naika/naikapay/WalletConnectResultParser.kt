@@ -1,7 +1,6 @@
 package io.naika.naikapay
 
 import android.content.Intent
-import android.util.Log
 import io.naika.naikapay.callback.ConnectWalletCallback
 import io.naika.naikapay.constant.NaikaSignerIntent
 import io.naika.naikapay.entity.AccountInfo
@@ -12,7 +11,6 @@ internal class WalletConnectResultParser {
         data: Intent?,
         walletCallback: ConnectWalletCallback.() -> Unit
     ) {
-        Log.d("Payment", "handleReceivedResult")
         if (data?.extras?.get(NaikaSignerIntent.RESPONSE_CODE) == NaikaSignerIntent.RESPONSE_RESULT_OK) {
             parseResult(data, walletCallback)
         } else {

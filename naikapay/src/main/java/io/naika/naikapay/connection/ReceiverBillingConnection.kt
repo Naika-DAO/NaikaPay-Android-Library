@@ -3,7 +3,6 @@ package io.naika.naikapay.connection
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import io.naika.naikapay.BuildConfig
 import io.naika.naikapay.NetworkType
 import io.naika.naikapay.PaymentLauncher
@@ -137,14 +136,13 @@ internal class ReceiverBillingConnection {
             SignTransactionWeakHolder(paymentLauncher, callback)
         )
 
-        sendSignTransactionBroadcast(unsignedTx, selectedAccountHash, abi, callback)
+        sendSignTransactionBroadcast(unsignedTx, selectedAccountHash, abi)
     }
 
     private fun sendSignTransactionBroadcast(
         unsignedTx: ByteArray,
         selectedAccountHash: String,
-        abi: String,
-        callback: SignTransactionCallback.() -> Unit
+        abi: String
     ) {
         getNewIntentForBroadcast().apply {
             action = ACTION_SIGN_TRANSACTION
@@ -152,7 +150,6 @@ internal class ReceiverBillingConnection {
             putExtra(KEY_SIGN_SELECTED_ADDRESS, selectedAccountHash)
             putExtra(KEY_SIGN_ABI, abi)
         }.run(::sendBroadcast)
-        Log.d("Payment", "sign tx broadcast sent")
     }
 
     fun connectWallet(
@@ -163,14 +160,10 @@ internal class ReceiverBillingConnection {
             WalletConnectWeakHolder(paymentLauncher, callback)
         )
 
-        sendConnectWalletBroadcast(callback)
+        sendConnectWalletBroadcast()
     }
 
-
-    private fun sendConnectWalletBroadcast(
-        callback: ConnectWalletCallback.() -> Unit
-    ) {
-        //ConnectWalletCallback().apply(callback).purchaseFlowBegan.invoke()
+    private fun sendConnectWalletBroadcast() {
         getNewIntentForBroadcast().apply {
             action = ACTION_CONNECT_WALLET
         }.run(::sendBroadcast)

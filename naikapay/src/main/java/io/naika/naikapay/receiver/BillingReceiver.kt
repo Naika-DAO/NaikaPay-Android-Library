@@ -3,14 +3,12 @@ package io.naika.naikapay.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 
 class BillingReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Intent().apply {
             action = intent!!.action
-            Log.d("Payment", action!!)
             intent.extras?.let { bundle ->
                 putExtras(bundle)
             }
