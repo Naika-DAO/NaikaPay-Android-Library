@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(),
                 * val txSignedHexString = Numeric.toHexString(signTransactionResponse.signedTxByteArray)
                 * val transaction = TransactionDecoder.decode(txSignedHexString)
                 * val isClaim = transaction.data == CLAIM_METHOD_HEX
-                * mainViewModel.loadContract(signTransactionResponse.signedTxByteArray, isClaim)
+                * mainViewModel.sendTransactionToNetwork(signTransactionResponse.signedTxByteArray, isClaim)
                 * */
 
                 /*
