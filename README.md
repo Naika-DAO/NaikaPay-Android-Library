@@ -49,6 +49,20 @@ Coin toss Dapp game crypto features that enables using NaikaPay SDK:
 
 ## Usage
 
+### Prerequisites
+
+Naika Pay Android SDK is a library that enables mobile native Dapp developers to have in-Dapp crypto
+payments. Naika Pay Android SDK needs to sign Smart Contract transactions using user's private key,
+but it does not keeps or store user's private key as it is a unsecure approach. So Naika Pay should
+interact with another Naika Ecosystem product named [Naika Signer](), Naika Signer is a light weight
+Ethereum wallet that user can create/import Ethereum wallets. Naika Signer is an Android native
+application that stores wallet's private key securely on device storage. Naika Pay Android SDK never
+ask user's private key or your password for decrypting stored private key, instead it is the Naika
+Signer responsibility to show pop-up dialogs to ask your password for unlocking the private key. For
+recap, Naika Pay Android SDK is a payment gateway that uses Naika Signer to sign transactions. So it
+is necessary for users to have Naika Signer installed alongside with your Dapp(which is using Naika
+Pay Android SDK for in-Dapp crypto payments) in their Android phone.
+
 ### Initialize NaikaPay SDK
 
 ```kotlin
