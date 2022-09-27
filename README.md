@@ -1,5 +1,3 @@
--
-
 Android In-Dapp Crypto Payment SDK for [Naika](https://naika.io) Ecosystem.
 
 ## Getting Started
