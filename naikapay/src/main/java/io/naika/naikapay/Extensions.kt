@@ -1,6 +1,6 @@
 package io.naika.naikapay
 
-
+@OptIn(ExperimentalStdlibApi::class)
 fun toSummarisedAddress(addressHash: String): String {
     val firstSection = addressHash.substring(0, 6)
     val dots = "....."
@@ -8,6 +8,3 @@ fun toSummarisedAddress(addressHash: String): String {
     val lastSection = addressHash.subSequence(size - 6, size)
     return "$firstSection$dots$lastSection".lowercase()
 }
-
-
-

@@ -3,7 +3,7 @@ package io.naika.naikapay.connection
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import io.naika.naikapay.BuildConfig
+import io.naika.naikapay.AOSPBuildConfig
 import io.naika.naikapay.NetworkType
 import io.naika.naikapay.PaymentLauncher
 import io.naika.naikapay.callback.*
@@ -49,13 +49,11 @@ internal class ReceiverBillingConnection {
         connectionCallbackReference = WeakReference(callback)
         contextReference = WeakReference(context)
 
-
-        if (!BuildConfig.DEBUG) {
+        if (!AOSPBuildConfig.DEBUG) {
             if (!Security.verifyNaikaSignerIsInstalled(context)) {
                 return false
             }
         }
-
         createReceiverConnection()
         registerBroadcast()
         isNetworkSupported(networkType)

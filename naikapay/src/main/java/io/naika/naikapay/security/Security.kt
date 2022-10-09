@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.Signature
 import android.os.Build
-import io.naika.naikapay.BuildConfig
+import io.naika.naikapay.AOSPBuildConfig
 import io.naika.naikapay.constant.Const.NAIKA_SIGNER_PACKAGE_NAME
 import io.naika.naikapay.getPackageInfo
 import java.io.ByteArrayInputStream
@@ -17,6 +17,7 @@ import java.util.*
 
 internal object Security {
 
+    @OptIn(ExperimentalStdlibApi::class)
     fun verifyNaikaSignerIsInstalled(context: Context): Boolean {
 
         if (getPackageInfo(context, NAIKA_SIGNER_PACKAGE_NAME) == null) {
@@ -49,7 +50,7 @@ internal object Security {
                 .generateCertificate(input) as X509Certificate
             val publicKey: PublicKey = certificate.publicKey
             val certificateHex = byte2HexFormatted(publicKey.encoded)
-            if (BuildConfig.NAIKA_HASH != certificateHex) {
+            if (AOSPBuildConfig.NAIKA_HASH != certificateHex) {
                 certificateMatch = false
                 break
             }
@@ -58,6 +59,7 @@ internal object Security {
         return certificateMatch
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun byte2HexFormatted(array: ByteArray): String {
         val stringBuilder = StringBuilder(array.size * 2)
         for (index in array.indices) {

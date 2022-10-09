@@ -1,0 +1,23 @@
+android_library {
+    name: "Naika-Pay",
+    srcs: ["src/main/java/**/*.kt"],
+    resource_dirs: [
+        "src/main/res",
+    ],
+
+    static_libs: [
+        "androidx.core_core",
+        "androidx.appcompat_appcompat",
+        "androidx.recyclerview_recyclerview",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.fragment_fragment-ktx",
+        "androidx.lifecycle_lifecycle-common-java8",
+        "androidx.lifecycle_lifecycle-viewmodel-ktx",
+        "androidx.lifecycle_lifecycle-livedata-ktx",
+        "com.google.android.material_material",
+        "kotlinx_coroutines_android",
+        "kotlinx_coroutines",
+    ],
+
+    manifest: "src/main/AndroidManifest.xml",
+}
